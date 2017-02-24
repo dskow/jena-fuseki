@@ -1,5 +1,7 @@
 # Jena Fuseki 2 docker image
 
+Forked from stain/jena-fuseki
+
 * Docker image: [dskow/jena-fuseki](https://hub.docker.com/r/dskow/jena-fuseki/)
 * Base images:  [java](https://hub.docker.com/r/_/java/):8-jre-alpine
 * Source: [Dockerfile](https://github.com/dskow/jena-fuseki/Dockerfile), [Apache Jena Fuseki](http://jena.apache.org/download/)
