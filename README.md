@@ -3,7 +3,7 @@
 Forked from stain/jena-fuseki
 
 * Docker image: [dskow/jena-fuseki](https://hub.docker.com/r/dskow/jena-fuseki/)
-* Base images:  [java](https://hub.docker.com/r/_/java/):8-jre-alpine
+* Base images:  [java](https://hub.docker.com/_/centos/):centos7
 * Source: [Dockerfile](https://github.com/dskow/jena-fuseki/Dockerfile), [Apache Jena Fuseki](http://jena.apache.org/download/)
 
 [![Build Status](https://travis-ci.org/dskow/jena-docker.svg)](https://travis-ci.org/dskow/jena-docker)
