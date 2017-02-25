@@ -6,7 +6,7 @@ Forked from stain/jena-fuseki
 * Base images:  [centos](https://hub.docker.com/_/centos/):centos7
 * Source: [Dockerfile](https://github.com/dskow/jena-fuseki/Dockerfile), [Apache Jena Fuseki](http://jena.apache.org/download/)
 
-[![Build Status](https://travis-ci.org/dskow/jena-docker.svg)](https://travis-ci.org/dskow/jena-docker)
+[![Build Status](https://travis-ci.org/dskow/jena-fuseki.svg)](https://travis-ci.org/dskow/jena-fuseki)
 
 [![](https://images.microbadger.com/badges/image/dskow/jena-fuseki.svg)](https://microbadger.com/images/dskow/jena-fuseki "Get your own image badge on microbadger.com")
 
@@ -27,7 +27,7 @@ Jena or Fuseki.
 
 Different licenses apply to files added by different Docker layers:
 
-* dskow/jena-fuseki [Dockerfile](https://github.com/dskow/jena-docker): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
+* dskow/jena-fuseki [Dockerfile](https://github.com/dskow/jena-fuseki): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 * Apache Jena (`/jena-fuseki` in the image): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
 * OpenJDK (/opt/jdk1.8.0_121 in the image): GPL 2.0 with Classpath exception
