@@ -24,7 +24,7 @@ MAINTAINER David Skowronski <david@dskow.com>
 
 # Update below according to https://jena.apache.org/download/
 ENV FUSEKI_SHA1 945ba476c5ffe946e3679352fc5b1edd3eb09334
-ENV FUSEKI_VERSION 2.5.0
+ENV FUSEKI_VERSION 2.6.0
 ENV FUSEKI_MIRROR http://mirror.jax.hugeserver.com/apache/
 ENV FUSEKI_ARCHIVE http://archive.apache.org/dist/
 ENV JAVA_HOME /opt/jdk1.8.0_121
