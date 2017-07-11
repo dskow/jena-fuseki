@@ -14,9 +14,9 @@
 #   limitations under the License.
 
 
-FROM centos:centos7
-RUN yum install -y epel-release && yum install -y wget bash sed pwgen && yum clean all
-RUN cd /opt/ && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz" && tar xzf jdk-8u131-linux-x64.tar.gz && rm -rf jdk-8u131-linux-x64.tar.gz
+FROM alpine:3.6
+RUN apk add --update pwgen bash wget ca-certificates && rm -rf /var/cache/apk/*
+RUN apk --update add openjdk8-jre
 
 MAINTAINER David Skowronski <david@dskow.com>
 
@@ -27,7 +27,7 @@ ENV FUSEKI_SHA1 92f27e01268ad47737bafd164474e36238351c86
 ENV FUSEKI_VERSION 2.6.0
 ENV FUSEKI_MIRROR http://mirror.jax.hugeserver.com/apache/
 ENV FUSEKI_ARCHIVE http://archive.apache.org/dist/
-ENV JAVA_HOME /opt/jdk1.8.0_131
+#ENV JAVA_HOME /usr
 #
 
 # Config and data
@@ -42,10 +42,10 @@ WORKDIR /tmp
 # sha1 checksum
 RUN echo "$FUSEKI_SHA1  fuseki.tar.gz" > fuseki.tar.gz.sha1
 # Download/check/unpack/move in one go (to reduce image size)
-RUN     wget -O fuseki.tar.gz $FUSEKI_MIRROR/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz || \
+RUN wget -O fuseki.tar.gz $FUSEKI_MIRROR/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz || \
         wget -O fuseki.tar.gz $FUSEKI_ARCHIVE/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz && \
         sha1sum -c fuseki.tar.gz.sha1 && \
-        tar zxf fuseki.tar.gz && \
+        tar -xzvf fuseki.tar.gz && \
         mv apache-jena-fuseki* $FUSEKI_HOME && \
         rm fuseki.tar.gz* && \
         cd $FUSEKI_HOME && rm -rf fuseki.war
