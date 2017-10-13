@@ -30,7 +30,7 @@ Different licenses apply to files added by different Docker layers:
 * dskow/jena-fuseki [Dockerfile](https://github.com/dskow/jena-fuseki): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 * Apache Jena (`/jena-fuseki` in the image): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-* OpenJDK (/opt/jdk1.8.0_121 in the image): GPL 2.0 with Classpath exception
+* OpenJDK (/opt/jdk1.8.0_144 in the image): GPL 2.0 with Classpath exception
 
 * CentOS Linux 7 (rest of /): Free software (GPL and other licenses)
 

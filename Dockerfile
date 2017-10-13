@@ -16,18 +16,20 @@
 
 FROM centos:centos7
 RUN yum install -y epel-release && yum install -y wget bash sed pwgen && yum clean all
-RUN cd /opt/ && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u131-b11/d54c1d3a095b4ff2b6607d096fa80163/jdk-8u131-linux-x64.tar.gz" && tar xzf jdk-8u131-linux-x64.tar.gz && rm -rf jdk-8u131-linux-x64.tar.gz
+RUN cd /opt/ && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.tar.gz" && tar xzf jdk-8u144-linux-x64.tar.gz && rm -rf jdk-8u144-linux-x64.tar.gz
+
+
 
 MAINTAINER David Skowronski <david@dskow.com>
 
 
 
 # Update below according to https://jena.apache.org/download/
-ENV FUSEKI_SHA1 92f27e01268ad47737bafd164474e36238351c86
-ENV FUSEKI_VERSION 2.6.0
+ENV FUSEKI_SHA1 514913b50d27798f3688a45a59f9bf5130b0dff2
+ENV FUSEKI_VERSION 3.4.0
 ENV FUSEKI_MIRROR http://mirror.jax.hugeserver.com/apache/
 ENV FUSEKI_ARCHIVE http://archive.apache.org/dist/
-ENV JAVA_HOME /opt/jdk1.8.0_131
+ENV JAVA_HOME /opt/jdk1.8.0_144
 #
 
 # Config and data
