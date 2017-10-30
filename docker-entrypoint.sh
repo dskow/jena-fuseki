@@ -23,6 +23,14 @@ if [ ! -f "$FUSEKI_BASE/shiro.ini" ] ; then
   echo ""
   cp "/tmp/shiro.ini" "$FUSEKI_HOME/shiro.ini"
   FUSEKI_BASE=/tmp
+  if [ -z "$ADMIN_PASSWORD" ] ; then
+    ADMIN_PASSWORD=$(pwgen -s 15)
+    echo "Randomly generated admin password:"
+    echo ""
+    echo "admin=$ADMIN_PASSWORD"
+  fi
+  echo ""
+  echo "###################################"
 fi
 if [ ! -f "$FUSEKI_HOME/shiro.ini" ] ; then
   # First time
