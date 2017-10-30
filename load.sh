@@ -24,7 +24,7 @@ if [ $# -eq 0 ] ; then
   echo "$0 [DB] [PATTERN ...]"
   echo "Load one or more RDF files into Jena Fuseki TDB database DB."
   echo ""
-  echo "Current directory is assumed to be /staging"
+  echo "Current directory is assumed to be /var/fuseki_home"
   echo ""
   echo 'PATTERNs can be a filename or a shell glob pattern like *ttl'
   echo ""
@@ -33,7 +33,7 @@ if [ $# -eq 0 ] ; then
   exit 0
 fi
 
-cd /staging 2>/dev/null || echo "/staging not found" >&2
+cd /var/fuseki_home/staging 2>/dev/null || echo "/var/fuseki_home/staging not found" >&2
 echo "Current directory:" $(pwd)
 
 DB=$1
