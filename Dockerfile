@@ -71,7 +71,7 @@ RUN     echo "$FUSEKI_SHA  fuseki.tar.gz" > fuseki.tar.gz.sha256 && \
 COPY docker-entrypoint.sh /
 RUN chmod 755 /docker-entrypoint.sh
 
-
+COPY shiro.ini /tmp/shiro.ini
 COPY load.sh $FUSEKI_HOME
 COPY tdbloader $FUSEKI_HOME
 RUN chmod 755 $FUSEKI_HOME/load.sh $FUSEKI_HOME/tdbloader

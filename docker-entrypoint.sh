@@ -16,6 +16,13 @@
 
 set -e
 
+if [ ! -f "$FUSEKI_BASE/shiro.ini" ] ; then
+  # First time
+  echo "###################################"
+  echo "Use Default shiro ini file"
+  echo ""
+  cp "/tmp/shiro.ini" "$FUSEKI_BASE/shiro.ini"
+fi
 if [ ! -f "$FUSEKI_HOME/shiro.ini" ] ; then
   # First time
   echo "###################################"
