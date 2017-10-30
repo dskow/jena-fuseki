@@ -14,61 +14,73 @@
 #   limitations under the License.
 
 
-FROM centos:centos7
+FROM krallin/centos-tini:centos7
 RUN yum install -y epel-release && yum install -y wget bash sed pwgen && yum clean all
-RUN cd /opt/ && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u144-b01/090f390dda5b47b9b721c7dfaa008135/jdk-8u144-linux-x64.tar.gz" && tar xzf jdk-8u144-linux-x64.tar.gz && rm -rf jdk-8u144-linux-x64.tar.gz
-
-
+RUN cd /opt/ && wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "http://download.oracle.com/otn-pub/java/jdk/8u152-b16/aa0333dd3019491ca4f6ddbe78cdb6d0/jdk-8u152-linux-x64.tar.gz" && tar xzf jdk-8u152-linux-x64.tar.gz && rm -rf jdk-8u152-linux-x64.tar.gz
 
 MAINTAINER David Skowronski <david@dskow.com>
 
+# Config and data
+ARG user=fuseki
+ARG group=fuseki
+ARG uid=1000
+ARG gid=1000
 
+ENV FUSEKI_BASE /var/fuseki_home
+ENV FUSEKI_HOME /opt/fuseki
+
+# Fuseki server is run with user `fuseki`, uid = 1510
+# If you bind mount a volume from the host or a data container,
+# ensure you use the same uid
+RUN groupadd -g ${gid} ${group} \
+	&& useradd -d "$FUSEKI_HOME" -u ${uid} -g ${gid} -m -s /bin/bash ${user}
+
+# Fuseki home directory is a volume, so configuration and fuseki data
+# can be persisted and survive image upgrades
+VOLUME /var/fuseki_home
 
 # Update below according to https://jena.apache.org/download/
-ENV FUSEKI_SHA1 514913b50d27798f3688a45a59f9bf5130b0dff2
-ENV FUSEKI_VERSION 3.4.0
-ENV FUSEKI_MIRROR http://mirror.jax.hugeserver.com/apache/
-ENV FUSEKI_ARCHIVE http://archive.apache.org/dist/
-ENV JAVA_HOME /opt/jdk1.8.0_144
+ARG FUSEKI_VERSION_MAJOR
+ARG FUSEKI_VERSION_MINOR
+ARG FUSEKI_VERSION_PATCH
+ENV FUSEKI_VERSION=${SERVICEMIX_VERSION_MAJOR:-3}.${SERVICEMIX_VERSION_MINOR:-4}.${SERVICEMIX_VERSION_PATCH:-0}
+ENV FUSEKI_MIRROR http://www-us.apache.org/dist/
+ENV FUSEKI_ARCHIVE http://archive.apache.org/dist/ 
+ENV JAVA_HOME /opt/jdk1.8.0_152
 #
 
-# Config and data
-VOLUME /fuseki
-ENV FUSEKI_BASE /fuseki
+# fuseki.tar.gz checksum, download will be validated using it
+ARG FUSEKI_SHA=0fe633fda08794ac88224b8c2c9cdea0b8baf4903d35594393e140348ce4466d
 
-
-# Installation folder
-ENV FUSEKI_HOME /jena-fuseki
 
 WORKDIR /tmp
-# sha1 checksum
-RUN echo "$FUSEKI_SHA1  fuseki.tar.gz" > fuseki.tar.gz.sha1
-# Download/check/unpack/move in one go (to reduce image size)
-RUN     wget -O fuseki.tar.gz $FUSEKI_MIRROR/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz || \
-        wget -O fuseki.tar.gz $FUSEKI_ARCHIVE/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz && \
-        sha1sum -c fuseki.tar.gz.sha1 && \
-        tar zxf fuseki.tar.gz && \
-        mv apache-jena-fuseki* $FUSEKI_HOME && \
-        rm fuseki.tar.gz* && \
-        cd $FUSEKI_HOME && rm -rf fuseki.war
 
+# Download/check/unpack/move in one go (to reduce image size)
+RUN     echo "$FUSEKI_SHA  fuseki.tar.gz" > fuseki.tar.gz.sha256 && \
+		wget -O fuseki.tar.gz $FUSEKI_MIRROR/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz || \
+        wget -O fuseki.tar.gz $FUSEKI_ARCHIVE/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz && \
+        sha256sum -c fuseki.tar.gz.sha256 && \
+        tar --directory=/opt -xzf /tmp/fuseki.tar.gz && \
+		mv /opt/apache-jena-fuseki-${FUSEKI_VERSION}/* /opt/fuseki && \
+        rm fuseki.tar.gz* && \
+		find /opt/fuseki/. | xargs -i chown "${user}":"${group}" {}
 
 # As "localhost" is often inaccessible within Docker container,
 # we'll enable basic-auth with a random admin password
 # (which we'll generate on start-up)
-COPY shiro.ini /jena-fuseki/shiro.ini
 COPY docker-entrypoint.sh /
 RUN chmod 755 /docker-entrypoint.sh
 
 
-COPY load.sh /jena-fuseki/
-COPY tdbloader /jena-fuseki/
-RUN chmod 755 /jena-fuseki/load.sh /jena-fuseki/tdbloader
-#VOLUME /staging
-
+COPY load.sh $FUSEKI_HOME
+COPY tdbloader $FUSEKI_HOME
+RUN chmod 755 $FUSEKI_HOME/load.sh $FUSEKI_HOME/tdbloader
 
 # Where we start our server from
-WORKDIR /jena-fuseki
+WORKDIR /opt/fuseki
+
+USER ${user}
+
 EXPOSE 3030
-ENTRYPOINT ["/docker-entrypoint.sh"]
-CMD ["/jena-fuseki/fuseki-server"]
+ENTRYPOINT ["/usr/bin/tini", "--"]
+CMD ["/docker-entrypoint.sh", "/opt/fuseki/fuseki-server"]

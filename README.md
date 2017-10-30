@@ -30,7 +30,7 @@ Different licenses apply to files added by different Docker layers:
 * dskow/jena-fuseki [Dockerfile](https://github.com/dskow/jena-fuseki): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 * Apache Jena (`/jena-fuseki` in the image): [Apache License, version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
 
-* OpenJDK (/opt/jdk1.8.0_144 in the image): GPL 2.0 with Classpath exception
+* OpenJDK (/opt/jdk1.8.0_152 in the image): GPL 2.0 with Classpath exception
 
 * CentOS Linux 7 (rest of /): Free software (GPL and other licenses)
 
@@ -65,7 +65,15 @@ heap (default: 1200 MiB), set the `JVM_ARGS` environment with `-e`:
 
     docker run -e JVM_ARGS=-Xmx2g dskow/jena-fuseki
 
+## default user
 
+The fuseki container uses user id 1000 and group id 1000 for the file permissions.
+These can be changed by custom building the image with build arguments.
+
+	docker build --build-arg user=newfuseki --build-arg uid=1001 --build-arg group=newfuseki --build-arg gid=1001 -t dskow/jena-fuseki .
+
+Other build args are FUSEKI_VERSION_MAJOR, FUSEKI_VERSION_MINOR, FUSEKI_VERSION_PATCH, and FUSEKI_SHA
+	
 ## Data persistence
 
 Fuseki's data is stored in the Docker volume `/fuseki` within the container.
@@ -75,7 +83,7 @@ is lost between each run of the jena-fuseki image.
 To store the data in a named Docker volume container `fuseki-data`
 (recommended), create it first as:
 
-    docker run --name fuseki-data -v /fuseki busybox
+    docker run --name fuseki-data -v /var/home_fuseki busybox
 
 Then start fuseki using `--volumes-from`. This allows you to later upgrade the
 jena-fuseki docker image without losing the data. The command below also uses
@@ -83,10 +91,14 @@ jena-fuseki docker image without losing the data. The command below also uses
 
     docker run -d --name fuseki --volumes-from fuseki-data dskow/jena-fuseki
 
+You will want to change the ownership of the data container files.  The id's are from the host machine. This example has user id 1000 and group id 1000
+
+	docker run --rm --volumes-from fuseki-data ubuntu bash -c "find /var/fuseki_home | xargs -i chown 1000:1000 {}"
+	
 If you want to store fuseki data in a specified location on the host (e.g. for
 disk space or speed requirements), specify it using `-v`:
 
-    docker run -d --name fuseki -v /ssd/data/fuseki:/fuseki dskow/jena-fuseki
+    docker run -d --name fuseki -v /ssd/data/fuseki:/var/home_fuseki dskow/jena-fuseki
 
 Note that the `/fuseki` volume must only be accessed from a single Fuseki
 container at a time.
