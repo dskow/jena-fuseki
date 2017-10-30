@@ -22,6 +22,7 @@ if [ ! -f "$FUSEKI_BASE/shiro.ini" ] ; then
   echo "Use Default shiro ini file"
   echo ""
   cp "/tmp/shiro.ini" "$FUSEKI_BASE/shiro.ini"
+  FUSEKI_BASE=/tmp
 fi
 if [ ! -f "$FUSEKI_HOME/shiro.ini" ] ; then
   # First time
