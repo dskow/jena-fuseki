@@ -35,10 +35,6 @@ ENV FUSEKI_HOME /opt/fuseki
 RUN groupadd -g ${gid} ${group} \
 	&& useradd -d "$FUSEKI_HOME" -u ${uid} -g ${gid} -m -s /bin/bash ${user}
 
-# Fuseki home directory is a volume, so configuration and fuseki data
-# can be persisted and survive image upgrades
-VOLUME /var/fuseki_home
-
 # Update below according to https://jena.apache.org/download/
 ARG FUSEKI_VERSION_MAJOR
 ARG FUSEKI_VERSION_MINOR
@@ -61,9 +57,11 @@ RUN     echo "$FUSEKI_SHA  fuseki.tar.gz" > fuseki.tar.gz.sha256 && \
         wget -O fuseki.tar.gz $FUSEKI_ARCHIVE/jena/binaries/apache-jena-fuseki-$FUSEKI_VERSION.tar.gz && \
         sha256sum -c fuseki.tar.gz.sha256 && \
         tar --directory=/opt -xzf /tmp/fuseki.tar.gz && \
-		mv /opt/apache-jena-fuseki-${FUSEKI_VERSION}/* /opt/fuseki && \
+		mv /opt/apache-jena-fuseki-${FUSEKI_VERSION}/* ${FUSEKI_HOME} && \
         rm fuseki.tar.gz* && \
-		find /opt/fuseki/. | xargs -i chown "${user}":"${group}" {}
+		mkdir -p ${FUSEKI_BASE} && \
+		chown "${user}":"${group}" ${FUSEKI_BASE} && \
+		find ${FUSEKI_HOME}/. | xargs -i chown "${user}":"${group}" {}
 
 # As "localhost" is often inaccessible within Docker container,
 # we'll enable basic-auth with a random admin password
@@ -82,5 +80,8 @@ WORKDIR /opt/fuseki
 USER ${user}
 
 EXPOSE 3030
+# Fuseki home directory is a volume, so configuration and fuseki data
+# can be persisted and survive image upgrades
+VOLUME $FUSEKI_BASE
 ENTRYPOINT ["/usr/bin/tini", "--"]
 CMD ["/docker-entrypoint.sh", "/opt/fuseki/fuseki-server"]
